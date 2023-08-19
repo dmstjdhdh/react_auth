@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {Button, Col, Container, Form, Navbar, Row} from "react-bootstrap";
+import {Link} from "react-router-dom";
 
 const Signup = () => {
     const [email, setEmail] = useState("");
@@ -107,7 +108,10 @@ const Signup = () => {
                     </Form>
                     <div className={"mt-3"}>
                         <span className="mt-3">
-                            이미 아이디가 있으신가요? 로그인
+                            이미 아이디가 있으신가요?{"     "}
+                            <Link to={"/login"}>
+                                로그인
+                            </Link>
                         </span>
                     </div>
                 </Col>
