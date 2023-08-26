@@ -1,10 +1,13 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Col, Container, Form, Navbar, Row, Spinner} from "react-bootstrap";
 import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
+import {useDispatch, useSelector} from "react-redux";
+import {checkEmailCode, emailCheckCode, register, sendEmailCode} from "../Actions/userActions";
 
 const Signup = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
@@ -13,52 +16,30 @@ const Signup = () => {
     const [showCode, setShowCode] = useState(false);
     const [emailVerifired, setEmailVerifired] = useState(false);
 
-    const [isLoading, setIsLoading] = useState(false)
+    //const [isLoading, setIsLoading] = useState(false)
 
     const [isPersonal,setIsPersonal] =useState(false);
     const [isMarketing,setIsMarketing] = useState(false);
 
+    const userRegister = useSelector((state) => state.userRegister)
+    const {loading, success, error} = userRegister
+
+    const emailSendCode = useSelector((state) => state.emailSendCode)
+    const {loading: emailSendLoading, success: emailSendSuccess} = emailSendCode
+
+    const checkEmailCode = useSelector((state) => state.checkEmailCode)
+    const {loading: emailCheckLoading, success: emailCheckSuccess} = checkEmailCode
+
     const checkCode = async(e) => {
         e.preventDefault();
 
-
-        const userInput = {
-            email,
-            code
-        }
-
-        try{
-            const {data, status} = await axios.post("http://localhost:8000/api/auth/email/check", userInput)
-
-            if(status === 201){
-                alert("확인되었습니다.")
-                setShowCode(false);
-                setEmailVerifired(true);
-            }
-
-        } catch (e) {
-            alert("인증코드가 맞지 않습니다.");
-        }
+        dispatch(emailCheckCode({email, code}));
     }
 
     const sendCode = async(e) => {
         e.preventDefault();
 
-        const userEmail = {
-            email
-        }
-
-        try{
-            const {data, status} = await axios.post("http://localhost:8000/api/auth/email/send", userEmail);
-
-            if(status === 201){
-                setShowCode(data);
-            }
-
-        } catch (e) {
-            console.log(e.message);
-            setIsLoading(false);
-        }
+        dispatch(sendEmailCode({email}))
     }
     const submitHandler = async (e) => {
         e.preventDefault();
@@ -73,7 +54,6 @@ const Signup = () => {
             return;
         }
 
-        setIsLoading(true);
 
         const userInput = {
             email,
@@ -83,27 +63,38 @@ const Signup = () => {
             isPersonalInfoAgree: isPersonal
         }
 
-        try{
-
-            const {data, status} = await axios.post("http://localhost:8000/api/auth/signup", userInput);
-            if(status === 201){
-                navigate("/login");
-                setIsLoading(false);
-            }
-        } catch (e) {
-          console.log(e.message);
-          setIsLoading(false);
-        }
+        dispatch(register(userInput));
     }
+
+
+    useEffect(() => {
+
+        if(emailSendSuccess){
+            setShowCode(true);
+        }
+
+        if(success) {
+            navigate("/login");
+        }
+
+        if (emailCheckSuccess){
+            alert("확인되었습니다.");
+            setShowCode(false);
+            setEmailVerifired(true);
+        }
+    }, [emailCheckSuccess, emailSendSuccess, dispatch, success, navigate]);
 
     return (
         <Container className={"mt-5"}>
             <Row className={"justify-content-lg-center"}>
-                {isLoading && (
+                {loading && (
                     <Spinner animation="border" role="status">
                         <span className="visually-hidden">Loading...</span>
                     </Spinner>
                 )}
+                {error && <h1>
+                    {error}
+                </h1>}
                 <Col xs={6}>
                     <h1>
                         회원가입
@@ -135,6 +126,12 @@ const Signup = () => {
                         <Button onClick={sendCode} className="mb-3" variant="primary" type="submit" disabled={emailVerifired}>
                             이메일인증 코드 보내기
                         </Button>
+
+                        {emailSendLoading && (
+                            <Spinner animation="border" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </Spinner>
+                        )}
 
                         {showCode && (
                             <Form.Group className="mb-3" controlId="formBasicCode">
