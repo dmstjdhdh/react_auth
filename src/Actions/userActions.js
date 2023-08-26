@@ -2,7 +2,12 @@ import {
     EMAIL_CHECK_CODE_FAIL,
     EMAIL_CHECK_CODE_REQUEST,
     EMAIL_CHECK_CODE_SUCCESS,
-    EMAIL_SEND_CODE_FAIL, EMAIL_SEND_CODE_REQUEST, EMAIL_SEND_CODE_SUCCESS,
+    EMAIL_SEND_CODE_FAIL,
+    EMAIL_SEND_CODE_REQUEST,
+    EMAIL_SEND_CODE_SUCCESS,
+    USER_LOGIN_FAIL,
+    USER_LOGIN_REQUEST,
+    USER_LOGIN_SUCCESS,
     USER_REGISTER_FAIL,
     USER_REGISTER_REQUEST,
     USER_REGISTER_SUCCESS
@@ -26,6 +31,33 @@ export const register = (userInput) => async (dispatch) => {
     } catch (e) {
         dispatch({
             type: USER_REGISTER_FAIL,
+            payload:
+                e.response && e.response.data.message
+                    ? e.response.data.message
+                    : e.message,
+        })
+    }
+}
+
+export const login = (userInput) => async (dispatch) => {
+    try{
+        dispatch({
+            type:USER_LOGIN_REQUEST,
+        })
+
+        const {data, status} = await authApi.post("/login", userInput);
+        if(status === 200){
+            dispatch({
+                type:USER_LOGIN_SUCCESS,
+                payload: data.data.user,
+            })
+            localStorage.setItem("token", data.data.token)
+            localStorage.setItem("userInfo", JSON.stringify(data.data.user))
+        }
+
+    } catch (e) {
+        dispatch({
+            type: USER_LOGIN_FAIL,
             payload:
                 e.response && e.response.data.message
                     ? e.response.data.message
@@ -81,3 +113,4 @@ export const emailCheckCode = (userInput) => async (dispatch) => {
         })
     }
 }
+

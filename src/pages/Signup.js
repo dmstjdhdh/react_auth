@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Col, Container, Form, Navbar, Row, Spinner} from "react-bootstrap";
+import {Button, Col, Container, Form, Row, Spinner} from "react-bootstrap";
 import {Link, useNavigate} from "react-router-dom";
-import axios from "axios";
 import {useDispatch, useSelector} from "react-redux";
-import {checkEmailCode, emailCheckCode, register, sendEmailCode} from "../Actions/userActions";
+import {emailCheckCode, register, sendEmailCode} from "../Actions/userActions";
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -15,8 +14,6 @@ const Signup = () => {
     const [code, setCode] = useState("");
     const [showCode, setShowCode] = useState(false);
     const [emailVerifired, setEmailVerifired] = useState(false);
-
-    //const [isLoading, setIsLoading] = useState(false)
 
     const [isPersonal,setIsPersonal] =useState(false);
     const [isMarketing,setIsMarketing] = useState(false);

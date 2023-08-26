@@ -1,44 +1,51 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Col, Container, Form, Row, Spinner} from "react-bootstrap";
-import {json, Link, useNavigate} from "react-router-dom";
-import axios from "axios";
+import {Link, useNavigate} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {login} from "../Actions/userActions";
 
 const Login = () => {
+    //redux 적용 순서
+    //1. dispatch 선언
+    //2. useEffect 선언
+    //3. submitHandler 수정 (action 적용)
+    //4. userSelect 적용
+    //5. userSelect에 대한 상태 선언
     const navigate = useNavigate()
+    //1.
+    const dispatch = useDispatch();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const [isLoading, setIsLoading] = useState(false);
+    //4.
+    const userLogin = useSelector(state => state.userLogin)
+    //5
+    const {loading, userInfo} = userLogin
+
     const submitHandler = async (e) => {
         e.preventDefault();
-
-        setIsLoading(true);
 
         const userInput = {
             email,
             password,
         }
-        console.log(userInput);
 
-        try{
-            const {data, status} = await axios.post("http://localhost:8000/api/auth/login", userInput);
-            if(status === 200){
-                alert("로그인 완료");
-                console.log("++++++++++++++++++++++", data.data.token);
-                localStorage.setItem("token", data.data.token)
-                setIsLoading(false);
-                navigate("/profile");
-            }
-        } catch (e) {
-            console.log(e.message);
-            setIsLoading(false);
-        }
+        //3
+        dispatch(login(userInput))
+
     }
+
+    //2
+    useEffect(() => {
+        if(userInfo){
+            navigate("/profile")
+        }
+    }, [dispatch, userInfo, navigate]);
 
     return (
         <Container className={"mt-5"}>
             <Row className={"justify-content-lg-center"}>
-                {isLoading && (
+                {loading && (
                     <Spinner animation="border" role="status">
                         <span className="visually-hidden">Loading...</span>
                     </Spinner>

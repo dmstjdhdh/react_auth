@@ -1,7 +1,11 @@
 import React from 'react';
 import {Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
+import {useSelector} from "react-redux";
 
 const HeaderMenu = () => {
+    const userLogin = useSelector(state => state.userLogin)
+    const {userInfo} = userLogin
+
     return (
         <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
             <Container>
@@ -24,10 +28,30 @@ const HeaderMenu = () => {
                         </NavDropdown>
                     </Nav>
                     <Nav>
-                        <Nav.Link href="/signup">SignUp</Nav.Link>
-                        <Nav.Link href="/login">
-                            Login
-                        </Nav.Link>
+                        {
+                            userInfo
+                                ? (
+                                    <NavDropdown title={userInfo.username} id="basic-nav-dropdown">
+                                        <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
+                                        <NavDropdown.Item href="#action/3.2">
+                                        Order
+                                        </NavDropdown.Item>
+                                        <NavDropdown.Divider />
+                                        <NavDropdown.Item href="#action/3.4">
+                                        LogOut
+                                        </NavDropdown.Item>
+                                    </NavDropdown>
+                                )
+                                : (
+                                    <>
+                                        <Nav.Link href="/signup">SignUp</Nav.Link>
+                                        <Nav.Link href="/login">
+                                            Login
+                                        </Nav.Link>
+                                    </>
+                                )
+                        }
+
                     </Nav>
                 </Navbar.Collapse>
             </Container>
