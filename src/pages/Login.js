@@ -1,24 +1,44 @@
 import React, {useState} from 'react';
-import {Button, Col, Container, Form, Row} from "react-bootstrap";
+import {Button, Col, Container, Form, Row, Spinner} from "react-bootstrap";
 import {Link} from "react-router-dom";
+import axios from "axios";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    const [isLoading, setIsLoading] = useState(false);
     const submitHandler = async (e) => {
         e.preventDefault();
+
+        setIsLoading(true);
 
         const userInput = {
             email,
             password,
         }
         console.log(userInput);
+
+        try{
+            const {data, status} = await axios.post("http://localhost:8000/api/auth/login", userInput);
+            if(status === 200){
+                alert("로그인 완료");
+                setIsLoading(false);
+            }
+        } catch (e) {
+            console.log(e.message);
+            setIsLoading(false);
+        }
     }
+
     return (
         <Container className={"mt-5"}>
-
             <Row className={"justify-content-lg-center"}>
+                {isLoading && (
+                    <Spinner animation="border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </Spinner>
+                )}
                 <Col xs={6}>
                     <h1>
                         로그인
