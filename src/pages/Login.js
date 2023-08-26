@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import {Button, Col, Container, Form, Row, Spinner} from "react-bootstrap";
-import {Link} from "react-router-dom";
+import {json, Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
+    const navigate = useNavigate()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -23,7 +24,10 @@ const Login = () => {
             const {data, status} = await axios.post("http://localhost:8000/api/auth/login", userInput);
             if(status === 200){
                 alert("로그인 완료");
+                console.log("++++++++++++++++++++++", data.data.token);
+                localStorage.setItem("token", data.data.token)
                 setIsLoading(false);
+                navigate("/profile");
             }
         } catch (e) {
             console.log(e.message);

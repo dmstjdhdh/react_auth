@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ChangePassword from "./pages/ChangePassword";
+import Profile from "./pages/Profile";
 
 const router = createBrowserRouter([
     {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
     {
         path: "/change/password",
         element: <ChangePassword/>
+    },
+    {
+        path: "/profile",
+        element: <Profile/>
     },
 ])
 
